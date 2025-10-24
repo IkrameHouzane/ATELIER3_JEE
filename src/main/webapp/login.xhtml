@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Connexion</title>
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .login-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="login-container">
+        <h2 class="login-title">🔐 Connexion</h2>
+
+        <h:form>
+            <p:messages id="messages"/>
+
+            <div style="margin-bottom: 20px;">
+                <label for="email">Email</label>
+                <p:inputText id="email"
+                             value="#{authBean.email}"
+                             required="true"
+                             placeholder="votre@email.com"
+                             style="width: 100%; margin-top: 5px;"/>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="password">Mot de passe</label>
+                <p:password id="password"
+                            value="#{authBean.motDePasse}"
+                            required="true"
+                            feedback="false"
+                            placeholder="********"
+                            style="width: 100%; margin-top: 5px;"/>
+            </div>
+
+            <h:outputText value="#{authBean.messageErreur}"
+                          style="color: red; display: block; margin-bottom: 15px;"
+                          rendered="#{not empty authBean.messageErreur}"/>
+
+            <p:commandButton value="Se connecter"
+                             action="#{authBean.seConnecter()}"
+                             icon="pi pi-sign-in"
+                             update="messages"
+                             styleClass="ui-button-success"
+                             style="width: 100%; margin-bottom: 15px;"/>
+
+            <div style="text-align: center;">
+                <p:button value="Créer un compte"
+                          outcome="register"
+                          styleClass="ui-button-secondary"
+                          style="width: 100%;"/>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px;">
+                <p:button value="Retour à l'accueil"
+                          outcome="index"
+                          icon="pi pi-home"
+                          styleClass="ui-button-text"/>
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

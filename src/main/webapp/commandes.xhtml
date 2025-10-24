@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="jakarta.tags.functions">
+
+<h:head>
+    <title>Mes Commandes</title>
+    <style>
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .status-en-attente { background: #f39c12; color: white; }
+        .status-confirmee { background: #3498db; color: white; }
+        .status-en-preparation { background: #9b59b6; color: white; }
+        .status-expediee { background: #1abc9c; color: white; }
+        .status-livree { background: #27ae60; color: white; }
+        .status-annulee { background: #e74c3c; color: white; }
+    </style>
+</h:head>
+
+<h:body>
+    <!-- Menu -->
+    <p:menubar>
+        <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+        <p:menuitem value="Panier" outcome="panier" icon="pi pi-shopping-cart"/>
+    </p:menubar>
+
+    <div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
+        <h2>📦 Mes Commandes</h2>
+
+        <h:form>
+            <!-- Message si aucune commande -->
+            <p:panel rendered="#{empty commandeBean.mesCommandes}">
+                <div style="text-align: center; padding: 50px;">
+                    <h3>Vous n'avez pas encore passé de commande</h3>
+                    <p:button value="Découvrir nos produits"
+                              outcome="index"
+                              icon="pi pi-shopping-cart"
+                              styleClass="ui-button-success"/>
+                </div>
+            </p:panel>
+
+            <!-- Liste des commandes -->
+            <p:dataTable value="#{commandeBean.mesCommandes}"
+                         var="commande"
+                         rendered="#{not empty commandeBean.mesCommandes}"
+                         paginator="true"
+                         rows="10"
+                         emptyMessage="Aucune commande">
+
+                <p:column headerText="N° Commande" style="width: 10%;">
+                    <strong>##{commande.id}</strong>
+                </p:column>
+
+                <p:column headerText="Date" style="width: 15%;">
+                    <h:outputText value="#{commande.dateCommande}">
+                        <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Montant" style="width: 12%; text-align: center;">
+                    <h:outputText value="#{commande.montantTotal} DH"
+                                  style="font-size: 16px; font-weight: bold; color: #e74c3c;"/>
+                </p:column>
+
+                <p:column headerText="Statut" style="width: 15%; text-align: center;">
+                    <span class="status-badge status-#{fn:toLowerCase(commande.statut)}">
+                        #{commande.statut}
+                    </span>
+                </p:column>
+
+                <p:column headerText="Adresse de livraison" style="width: 28%;">
+                    #{commande.adresseLivraison}
+                </p:column>
+
+                <p:column headerText="Détails" style="width: 20%; text-align: center;">
+                    <p:commandButton value="Voir détails"
+                                     icon="pi pi-eye"
+                                     onclick="PF('detailDialog#{commande.id}').show();"
+                                     styleClass="ui-button-info"
+                                     type="button"/>
+
+                    <!-- Dialog pour les détails -->
+                    <p:dialog widgetVar="detailDialog#{commande.id}"
+                              header="Détails de la commande ##{commande.id}"
+                              modal="true"
+                              width="800"
+                              height="600">
+                        <h4>Informations générales</h4>
+                        <p><strong>Date :</strong>
+                            <h:outputText value="#{commande.dateCommande}">
+                                <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy à HH:mm" />
+                            </h:outputText>
+                        </p>
+                        <p><strong>Statut :</strong>
+                            <span class="status-badge status-#{fn:toLowerCase(commande.statut)}">
+                                #{commande.statut}
+                            </span>
+                        </p>
+                        <p><strong>Adresse de livraison :</strong> #{commande.adresseLivraison}</p>
+
+                        <h4 style="margin-top: 20px;">Articles commandés</h4>
+                        <p:dataTable value="#{commande.lignesCommande}" var="ligne">
+                            <p:column headerText="Produit">
+                                <strong>#{ligne.produit.nom}</strong>
+                            </p:column>
+
+                            <p:column headerText="Prix unitaire" style="text-align: center;">
+                                #{ligne.prixUnitaire} DH
+                            </p:column>
+
+                            <p:column headerText="Quantité" style="text-align: center;">
+                                #{ligne.quantite}
+                            </p:column>
+
+                            <p:column headerText="Sous-total" style="text-align: center;">
+                                <strong>#{ligne.sousTotal} DH</strong>
+                            </p:column>
+                        </p:dataTable>
+
+                        <div style="text-align: right; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                            <h3 style="color: #e74c3c; margin: 0;">
+                                Total : #{commande.montantTotal} DH
+                            </h3>
+                        </div>
+                    </p:dialog>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </div>
+</h:body>
+</html>

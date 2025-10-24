@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Produits</title>
+</h:head>
+
+<h:body>
+    <!-- Menu -->
+    <p:menubar>
+        <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+        <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"/>
+    </p:menubar>
+
+    <div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
+        <h2>📦 Gestion des Produits</h2>
+
+        <h:form>
+            <!-- Formulaire d'ajout -->
+            <p:panel header="#{produitBean.nouveauProduit.id == null ? 'Ajouter un produit' : 'Modifier le produit #' += produitBean.nouveauProduit.id}" style="margin-bottom: 20px;">
+                <div class="p-grid">
+                    <p:inputText id="produitId" value="#{produitBean.nouveauProduit.id}" type="hidden"/>
+                    <div class="p-col-12 p-md-4">
+                        <label for="nom">Nom du produit *</label>
+                        <p:inputText id="nom"
+                                     value="#{produitBean.nouveauProduit.nom}"
+                                     required="true"
+                                     placeholder="Ex: iPhone 15 Pro"
+                                     style="width: 100%; margin-top: 5px;"/>
+                    </div>
+
+                    <div class="p-col-12 p-md-8">
+                        <label for="description">Description</label>
+                        <p:inputText id="description"
+                                     value="#{produitBean.nouveauProduit.description}"
+                                     placeholder="Description du produit"
+                                     style="width: 100%; margin-top: 5px;"/>
+                    </div>
+
+                    <div class="p-col-12 p-md-3">
+                        <label for="prix">Prix (DH) *</label>
+                        <p:inputNumber id="prix"
+                                       value="#{produitBean.nouveauProduit.prix}"
+                                       required="true"
+                                       minValue="0"
+                                       decimalPlaces="2"
+                                       style="width: 100%; margin-top: 5px;"/>
+                    </div>
+
+                    <div class="p-col-12 p-md-2">
+                        <label for="stock">Stock *</label>
+                        <p:inputNumber id="stock"
+                                       value="#{produitBean.nouveauProduit.stock}"
+                                       required="true"
+                                       minValue="0"
+                                       decimalPlaces="0"
+                                       style="width: 100%; margin-top: 5px;"/>
+                    </div>
+
+                    <div class="p-col-12 p-md-3">
+                        <label for="categorie">Catégorie *</label>
+                        <p:selectOneMenu id="categorie"
+                                         value="#{produitBean.categorieId}"
+                                         required="true"
+                                         style="width: 100%; margin-top: 5px;">
+                            <f:selectItem itemLabel="Sélectionnez une catégorie" itemValue="#{null}"/>
+                            <f:selectItems value="#{produitBean.categories}"
+                                           var="cat"
+                                           itemLabel="#{cat.nom}"
+                                           itemValue="#{cat.id}"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="p-col-12 p-md-3">
+                        <label for="photo">URL Photo</label>
+                        <p:inputText id="photo"
+                                     value="#{produitBean.nouveauProduit.photo}"
+                                     placeholder="http://..."
+                                     style="width: 100%; margin-top: 5px;"/>
+                    </div>
+
+                    <div class="p-col-12 p-md-2" style="display: flex; align-items: flex-end; gap: 10px;">
+                        <p:commandButton value="#{produitBean.nouveauProduit.id == null ? 'Ajouter' : 'Sauvegarder'}"
+                                         icon="#{produitBean.nouveauProduit.id == null ? 'pi pi-plus' : 'pi pi-save'}"
+                                         action="#{produitBean.sauvegarderProduit()}"
+                                         update="@form"
+                                         styleClass="ui-button-success"
+                                         style="flex-grow: 1;"/>
+                        <p:commandButton value="Annuler"
+                                         icon="pi pi-times"
+                                         action="#{produitBean.annulerModification()}"
+                                         update="@form"
+                                         styleClass="ui-button-secondary"
+                                         rendered="#{produitBean.nouveauProduit.id != null}"
+                                         style="flex-grow: 1;"/>
+                    </div>
+                </div>
+            </p:panel>
+
+            <!-- Liste des produits -->
+            <p:dataTable value="#{produitBean.produits}"
+                         var="produit"
+                         emptyMessage="Aucun produit"
+                         paginator="true"
+                         rows="10">
+
+                <p:column headerText="ID" style="width: 5%; text-align: center;">
+                    <strong>##{produit.id}</strong>
+                </p:column>
+
+                <p:column headerText="Image" style="width: 10%; text-align: center;">
+                    <h:outputText value="📦" style="font-size: 30px;" rendered="#{empty produit.photo}"/>
+                    <p:graphicImage value="#{produit.photo}"
+                                    rendered="#{not empty produit.photo}"
+                                    style="max-height: 50px; max-width: 50px;"/>
+                </p:column>
+
+                <p:column headerText="Nom" style="width: 20%;">
+                    <h:outputText value="#{produit.nom}" style="font-weight: bold;"/>
+                </p:column>
+
+                <p:column headerText="Description" style="width: 25%;">
+                    <h:outputText value="#{produit.description}" style="font-size: 13px;"/>
+                </p:column>
+
+                <p:column headerText="Catégorie" style="width: 12%;">
+                    #{produit.categorie.nom}
+                </p:column>
+
+                <p:column headerText="Prix" style="width: 10%; text-align: center;">
+                    <h:outputText value="#{produit.prix} DH"
+                                  style="color: #e74c3c; font-weight: bold;"/>
+                </p:column>
+
+                <p:column headerText="Stock" style="width: 8%; text-align: center;">
+                    <h:outputText value="#{produit.stock}"
+                                  style="color: #{produit.stock > 0 ? 'green' : 'red'}; font-weight: bold;"/>
+                </p:column>
+
+                <p:column headerText="Actions" style="width: 10%; text-align: center;">
+                    <p:commandButton icon="pi pi-pencil"
+                                     action="#{produitBean.modifierProduit(produit)}"
+                                     update="@form"
+                                     styleClass="ui-button-info"
+                                     title="Modifier"
+                                     style="margin-right: 5px;"/>
+                    <p:commandButton icon="pi pi-trash"
+                                     action="#{produitBean.supprimerProduit(produit.id)}"
+                                     update="@form"
+                                     styleClass="ui-button-danger"
+                                     title="Supprimer">
+                        <p:confirm header="Confirmation"
+                                   message="Supprimer le produit '#{produit.nom}' ?"
+                                   icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times"/>
+            </p:confirmDialog>
+        </h:form>
+    </div>
+</h:body>
+</html>

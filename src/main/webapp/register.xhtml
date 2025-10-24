@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Inscription</title>
+    <style>
+        .register-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .register-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="register-container">
+        <h2 class="register-title">📝 Créer un compte</h2>
+
+        <h:form>
+            <p:messages id="messages"/>
+
+            <div class="p-grid">
+                <div class="p-col-12 p-md-6">
+                    <label for="nom">Nom *</label>
+                    <p:inputText id="nom"
+                                 value="#{authBean.nouvelInternaute.nom}"
+                                 required="true"
+                                 style="width: 100%; margin-top: 5px;"/>
+                </div>
+
+                <div class="p-col-12 p-md-6">
+                    <label for="prenom">Prénom *</label>
+                    <p:inputText id="prenom"
+                                 value="#{authBean.nouvelInternaute.prenom}"
+                                 required="true"
+                                 style="width: 100%; margin-top: 5px;"/>
+                </div>
+
+                <div class="p-col-12">
+                    <label for="email">Email *</label>
+                    <p:inputText id="email"
+                                 value="#{authBean.nouvelInternaute.email}"
+                                 required="true"
+                                 style="width: 100%; margin-top: 5px;"/>
+                </div>
+
+                <div class="p-col-12">
+                    <label for="password">Mot de passe *</label>
+                    <p:password id="password"
+                                value="#{authBean.nouvelInternaute.motDePasse}"
+                                required="true"
+                                feedback="false"
+                                style="width: 100%; margin-top: 5px;"/>
+                </div>
+
+                <div class="p-col-12">
+                    <label for="telephone">Téléphone</label>
+                    <p:inputText id="telephone"
+                                 value="#{authBean.nouvelInternaute.telephone}"
+                                 style="width: 100%; margin-top: 5px;"/>
+                </div>
+
+                <div class="p-col-12">
+                    <label for="adresse">Adresse</label>
+                    <p:inputTextarea id="adresse"
+                                     value="#{authBean.nouvelInternaute.adresse}"
+                                     rows="3"
+                                     style="width: 100%; margin-top: 5px;"/>
+                </div>
+
+                <div class="p-col-12 p-md-6">
+                    <label for="ville">Ville</label>
+                    <p:inputText id="ville"
+                                 value="#{authBean.nouvelInternaute.ville}"
+                                 style="width: 100%; margin-top: 5px;"/>
+                </div>
+
+                <div class="p-col-12 p-md-6">
+                    <label for="codePostal">Code Postal</label>
+                    <p:inputText id="codePostal"
+                                 value="#{authBean.nouvelInternaute.codePostal}"
+                                 style="width: 100%; margin-top: 5px;"/>
+                </div>
+            </div>
+
+            <h:outputText value="#{authBean.messageErreur}"
+                          style="color: red; display: block; margin: 15px 0;"
+                          rendered="#{not empty authBean.messageErreur}"/>
+
+            <p:commandButton value="S'inscrire"
+                             action="#{authBean.sInscrire()}"
+                             icon="pi pi-user-plus"
+                             update="messages"
+                             styleClass="ui-button-success"
+                             style="width: 100%; margin-top: 20px;"/>
+
+            <div style="text-align: center; margin-top: 15px;">
+                <p:button value="Déjà un compte ? Se connecter"
+                          outcome="login"
+                          styleClass="ui-button-text"/>
+            </div>
+
+            <div style="text-align: center; margin-top: 10px;">
+                <p:button value="Retour à l'accueil"
+                          outcome="index"
+                          icon="pi pi-home"
+                          styleClass="ui-button-text"/>
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

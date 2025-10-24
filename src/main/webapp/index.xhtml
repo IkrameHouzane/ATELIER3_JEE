@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>E-Commerce - Accueil</title>
+    <style>
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            text-align: center;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            min-height: 40px;
+        }
+        .product-desc {
+            color: #666;
+            font-size: 14px;
+            min-height: 60px;
+            overflow: hidden;
+        }
+        .product-price {
+            font-size: 24px;
+            color: #e74c3c;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .product-stock {
+            margin: 5px 0;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <!-- Menu de navigation -->
+    <p:menubar>
+        <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+        <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"/>
+        <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-cog"/>
+        <p:menuitem value="Mes Commandes" outcome="commandes" icon="pi pi-shopping-bag"
+                    rendered="#{authBean.estConnecte()}"/>
+
+        <f:facet name="options">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <!-- Panier -->
+                <h:form rendered="#{authBean.estConnecte()}">
+                    <p:commandButton value="Panier (#{panierBean.nombreArticles})"
+                                     icon="pi pi-shopping-cart"
+                                     action="panier"
+                                     styleClass="ui-button-success"/>
+                </h:form>
+
+                <!-- Connexion/Déconnexion -->
+                <h:panelGroup rendered="#{authBean.estConnecte()}">
+                    <span style="margin-right: 10px;">
+                        Bonjour #{authBean.internauteConnecte.prenom} !
+                    </span>
+                    <h:form style="display: inline;">
+                        <p:commandButton value="Déconnexion"
+                                         icon="pi pi-sign-out"
+                                         action="#{authBean.seDeconnecter()}"
+                                         styleClass="ui-button-danger"/>
+                    </h:form>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{!authBean.estConnecte()}">
+                    <p:button value="Connexion" outcome="login" icon="pi pi-sign-in"/>
+                    <p:button value="Inscription" outcome="register" icon="pi pi-user-plus"
+                              styleClass="ui-button-success"/>
+                </h:panelGroup>
+            </div>
+        </f:facet>
+    </p:menubar>
+
+    <div style="padding: 20px;">
+        <h:form>
+            <!-- Barre de recherche et filtres -->
+            <p:panel header="🔍 Rechercher des produits" style="margin-bottom: 20px;">
+                <div class="p-grid">
+                    <div class="p-col-12 p-md-5">
+                        <p:inputText id="recherche"
+                                     value="#{produitBean.motCle}"
+                                     placeholder="Rechercher un produit..."
+                                     style="width: 100%;"/>
+                    </div>
+                    <div class="p-col-12 p-md-4">
+                        <p:selectOneMenu value="#{produitBean.categorieId}" style="width: 100%;">
+                            <f:selectItem itemLabel="Toutes les catégories" itemValue="#{null}"/>
+                            <f:selectItems value="#{produitBean.categories}"
+                                           var="cat"
+                                           itemLabel="#{cat.nom}"
+                                           itemValue="#{cat.id}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="p-col-12 p-md-3">
+                        <p:commandButton value="Rechercher"
+                                         action="#{produitBean.rechercher()}"
+                                         update="@form"
+                                         icon="pi pi-search"
+                                         style="width: 100%;"/>
+                    </div>
+                </div>
+            </p:panel>
+
+            <!-- Grille de produits -->
+            <h2 style="text-align: center; margin: 30px 0;">🛍️ Nos Produits</h2>
+
+            <p:dataView value="#{produitBean.produits}"
+                        var="produit"
+                        layout="grid"
+                        rows="12"
+                        paginator="true"
+                        emptyMessage="Aucun produit trouvé">
+
+                <p:dataViewGridItem>
+                    <div class="product-card">
+                        <!-- Image du produit -->
+                        <div class="product-image">
+                            <h:outputText value="📦" style="font-size: 80px;" rendered="#{empty produit.photo}"/>
+                            <p:graphicImage value="#{produit.photo}"
+                                            rendered="#{not empty produit.photo}"
+                                            style="max-height: 180px; max-width: 100%;"/>
+                        </div>
+
+                        <!-- Nom du produit -->
+                        <div class="product-name">
+                            #{produit.nom}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="product-desc">
+                            #{produit.description}
+                        </div>
+
+                        <!-- Prix -->
+                        <div class="product-price">
+                            #{produit.prix} DH
+                        </div>
+
+                        <!-- Stock -->
+                        <div class="product-stock">
+                            <h:outputText value="✅ En stock: #{produit.stock}"
+                                          style="color: green;"
+                                          rendered="#{produit.stock > 0}"/>
+                            <h:outputText value="❌ Rupture de stock"
+                                          style="color: red;"
+                                          rendered="#{produit.stock == 0}"/>
+                        </div>
+
+                        <!-- Bouton Ajouter au panier -->
+                        <div style="margin-top: auto;">
+                            <p:commandButton value="Ajouter au panier"
+                                             icon="pi pi-cart-plus"
+                                             action="#{panierBean.ajouterAuPanier(produit.id)}"
+                                             styleClass="ui-button-success"
+                                             disabled="#{produit.stock == 0 || !authBean.estConnecte()}"
+                                             style="width: 100%;"/>
+
+                            <h:outputText value="Connectez-vous pour acheter"
+                                          style="display: block; color: #999; margin-top: 10px; font-size: 12px;"
+                                          rendered="#{!authBean.estConnecte()}"/>
+                        </div>
+                    </div>
+                </p:dataViewGridItem>
+            </p:dataView>
+        </h:form>
+    </div>
+</h:body>
+</html>

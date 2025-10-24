@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+             version="3.2">
+    <!-- Nom de l’unité de persistance (utilisé dans ton code avec @PersistenceContext) -->
+    <persistence-unit name="mycnx" transaction-type="JTA">
+
+        <!-- Hibernate est le moteur JPA utilisé -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Datasource configurée dans WildFly -->
+        <jta-data-source>java:/MySqlDS</jta-data-source>
+
+        <!-- Classes d'entités (tu pourras en ajouter ici ou laisser Hibernate les scanner automatiquement) -->
+        <!--
+        <class>ma.fstt.model.Produit</class>
+        <class>ma.fstt.model.Categorie</class>
+        ...
+        -->
+
+        <properties>
+            <!-- Action sur la base de données :
+                 - create : recrée les tables à chaque démarrage
+                 - update : garde les données et met à jour la structure -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <!-- Afficher les requêtes SQL dans la console -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+
+
+            <!-- UTF-8 encoding -->
+            <property name="hibernate.connection.useUnicode" value="true"/>
+            <property name="hibernate.connection.characterEncoding" value="utf8"/>
+        </properties>
+    </persistence-unit>
+
+
+</persistence>

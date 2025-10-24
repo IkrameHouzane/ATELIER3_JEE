@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Catégories</title>
+</h:head>
+
+<h:body>
+    <!-- Menu -->
+    <p:menubar>
+        <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+        <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-box"/>
+    </p:menubar>
+
+    <div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+        <h2>🏷️ Gestion des Catégories</h2>
+
+        <h:form>
+            <!-- Formulaire d'ajout -->
+            <p:panel header="Ajouter une catégorie" style="margin-bottom: 20px;">
+                <div class="p-grid">
+                    <div class="p-col-12 p-md-5">
+                        <label for="nom">Nom de la catégorie *</label>
+                        <p:inputText id="nom"
+                                     value="#{categorieBean.nouvelleCategorie.nom}"
+                                     required="true"
+                                     placeholder="Ex: Électronique"
+                                     style="width: 100%; margin-top: 5px;"/>
+                    </div>
+
+                    <div class="p-col-12 p-md-5">
+                        <label for="description">Description</label>
+                        <p:inputText id="description"
+                                     value="#{categorieBean.nouvelleCategorie.description}"
+                                     placeholder="Ex: Produits électroniques et informatiques"
+                                     style="width: 100%; margin-top: 5px;"/>
+                    </div>
+
+                    <div class="p-col-12 p-md-2" style="display: flex; align-items: flex-end;">
+                        <p:commandButton value="Ajouter"
+                                         icon="pi pi-plus"
+                                         action="#{categorieBean.ajouterCategorie()}"
+                                         update="@form"
+                                         styleClass="ui-button-success"
+                                         style="width: 100%;"/>
+                    </div>
+                </div>
+            </p:panel>
+
+            <!-- Liste des catégories -->
+            <p:dataTable value="#{categorieBean.categories}"
+                         var="categorie"
+                         emptyMessage="Aucune catégorie"
+                         paginator="true"
+                         rows="10">
+
+                <p:column headerText="ID" style="width: 10%; text-align: center;">
+                    <strong>##{categorie.id}</strong>
+                </p:column>
+
+                <p:column headerText="Nom" style="width: 30%;">
+                    <h:outputText value="#{categorie.nom}" style="font-weight: bold;"/>
+                </p:column>
+
+                <p:column headerText="Description" style="width: 45%;">
+                    #{categorie.description}
+                </p:column>
+
+                <p:column headerText="Actions" style="width: 15%; text-align: center;">
+                    <p:commandButton icon="pi pi-pencil"
+                                     action="#{categorieBean.modifierCategorie(categorie)}"
+                                     update="@form"
+                                     styleClass="ui-button-info"
+                                     title="Modifier"
+                                     style="margin-right: 5px;"/>
+                    <p:commandButton icon="pi pi-trash"
+                                     action="#{categorieBean.supprimerCategorie(categorie.id)}"
+                                     update="@form"
+                                     styleClass="ui-button-danger"
+                                     title="Supprimer">
+                        <p:confirm header="Confirmation"
+                                   message="Supprimer la catégorie '#{categorie.nom}' et tous ses produits ?"
+                                   icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times"/>
+            </p:confirmDialog>
+        </h:form>
+    </div>
+</h:body>
+</html>
