@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Entité Internaute
- * Représente un utilisateur/client du site e-commerce
  */
 @Entity
 @Table(name = "internautes")

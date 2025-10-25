@@ -1,0 +1,118 @@
+/* General body styling */
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Main container for content */
+.main-container {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styling */
+h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Button styling */
+.ui-button {
+    font-weight: 600 !important;
+    border-radius: 4px !important;
+}
+
+/* Input styling */
+.ui-inputtext, .ui-inputnumber, .ui-selectonemenu {
+    width: 100%;
+    margin-top: 5px;
+}
+
+/* DataTable styling */
+.ui-datatable .ui-datatable-header {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.ui-datatable .ui-column-header-content {
+    font-weight: 600;
+}
+
+/* Status badge styling */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    color: white;
+}
+.status-en-attente, .status-en_attente { background: #f39c12; }
+.status-confirmee { background: #3498db; }
+.status-en-preparation, .status-en_preparation { background: #9b59b6; }
+.status-expediee { background: #1abc9c; }
+.status-livree { background: #27ae60; }
+.status-annulee { background: #e74c3c; }
+
+/* Product grid styling */
+.product-grid .ui-dataview-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px;
+    text-align: center;
+    width: 300px; /* Fixed width for consistency */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* This will help align the content */
+}
+
+.product-image {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.product-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+    min-height: 40px;
+}
+
+.product-desc {
+    color: #666;
+    font-size: 14px;
+    min-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    -webkit-box-orient: vertical;
+}
+
+.product-price {
+    font-size: 24px;
+    color: #e74c3c;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.product-stock {
+    margin: 5px 0;
+}

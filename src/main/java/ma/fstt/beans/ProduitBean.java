@@ -17,7 +17,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Named
-@ViewScoped  // ← CHANGÉ ICI
+@ViewScoped
 @Getter
 @Setter
 public class ProduitBean implements Serializable {  // ← AJOUTÉ Serializable
