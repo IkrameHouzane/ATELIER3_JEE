@@ -8,7 +8,7 @@ import ma.fstt.beans.AuthBean;
 
 import java.io.IOException;
 
-@WebFilter(filterName = "AdminAuthFilter", urlPatterns = {"/admin-produits.xhtml", "/categories.xhtml"})
+@WebFilter(filterName = "AdminAuthFilter", urlPatterns = {"/admin-produits.xhtml", "/categories.xhtml", "/admin-commandes.xhtml"})
 public class AdminAuthFilter implements Filter {
 
     @Override

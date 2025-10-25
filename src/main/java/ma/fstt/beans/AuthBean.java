@@ -146,6 +146,7 @@ public class AuthBean implements Serializable {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.removeAttribute("authBean");
+            session.invalidate(); // Invalider complètement la session
         }
 
         return "index?faces-redirect=true";

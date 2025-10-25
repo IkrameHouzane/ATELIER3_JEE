@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gestion des Commandes</title>
+    <style>
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+        }
+        .status-en_attente { background: #f39c12; }
+        .status-confirmee { background: #3498db; }
+        .status-en_preparation { background: #9b59b6; }
+        .status-expediee { background: #1abc9c; }
+        .status-livree { background: #27ae60; }
+        .status-annulee { background: #e74c3c; }
+    </style>
+</h:head>
+
+<h:body>
+    <!-- Menu -->
+    <h:form>
+        <p:menubar>
+            <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+            <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-box"
+                        rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
+            <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"
+                        rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
+            <p:menuitem value="Commandes Admin" outcome="admin-commandes" icon="pi pi-server"
+                        rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
+            <f:facet name="options">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <!-- Panier -->
+                    <p:commandButton value="Panier (#{panierBean.nombreArticles})"
+                                         icon="pi pi-shopping-cart"
+                                         action="panier"
+                                         styleClass="ui-button-success"
+                                         rendered="#{authBean.estConnecte()}"/>
+                        <span style="margin-right: 10px; margin-left: 10px;" rendered="#{authBean.estConnecte()}">
+                            Bonjour #{authBean.internauteConnecte.prenom} !
+                        </span>
+                        <p:commandButton value="Déconnexion"
+                                         icon="pi pi-sign-out"
+                                         action="#{authBean.seDeconnecter()}"
+                                         styleClass="ui-button-danger"
+                                         rendered="#{authBean.estConnecte()}"/>
+
+                    <h:panelGroup rendered="#{!authBean.estConnecte()}">
+                        <p:button value="Connexion" outcome="login" icon="pi pi-sign-in"/>
+                        <p:button value="Inscription" outcome="register" icon="pi pi-user-plus"
+                                  styleClass="ui-button-success"/>
+                    </h:panelGroup>
+                </div>
+            </f:facet>
+        </p:menubar>
+    </h:form>
+
+    <div style="padding: 20px; max-width: 1600px; margin: 0 auto;">
+        <h2>📦 Gestion des Commandes</h2>
+
+        <h:form id="formCommandes">
+            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+
+            <p:dataTable id="tableCommandes"
+                         value="#{commandeBean.toutesLesCommandes}"
+                         var="commande"
+                         paginator="true"
+                         rows="15"
+                         emptyMessage="Aucune commande à afficher.">
+
+                <p:column headerText="ID" sortBy="#{commande.id}" style="width: 5%;">
+                    <strong>##{commande.id}</strong>
+                </p:column>
+
+                <p:column headerText="Client" sortBy="#{commande.internaute.email}" style="width: 15%;">
+                    <h:outputText value="#{commande.internaute.prenom} #{commande.internaute.nom}"/>
+                    <br/>
+                    <small>#{commande.internaute.email}</small>
+                </p:column>
+
+                <p:column headerText="Date" sortBy="#{commande.dateCommande}" style="width: 12%;">
+                    <h:outputText value="#{commande.dateCommande}">
+                        <f:convertDateTime type="localDateTime" pattern="dd/MM/yy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Montant" sortBy="#{commande.montantTotal}" style="width: 8%; text-align: right;">
+                    <h:outputText value="#{commande.montantTotal}" style="font-weight: bold; color: #e74c3c;">
+                        <f:convertNumber currencySymbol="DH" type="currency"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Adresse" style="width: 20%;">
+                    <h:outputText value="#{commande.adresseLivraison}"/>
+                </p:column>
+
+                <p:column headerText="Statut" style="width: 15%;">
+                    <p:selectOneMenu value="#{commande.statut}" style="width: 100%;">
+                        <f:selectItems value="#{commandeBean.statuts}" var="statut" itemLabel="#{statut}" itemValue="#{statut}"/>
+                        <p:ajax listener="#{commandeBean.mettreAJourStatut(commande)}" update=":formCommandes:messages"/>
+                    </p:selectOneMenu>
+                </p:column>
+
+                <p:column headerText="Articles" style="width: 5%; text-align: center;">
+                    <p:commandButton icon="pi pi-eye" type="button" onclick="PF('dlg-#{commande.id}').show()"/>
+                </p:column>
+
+                <!-- Dialog pour les détails de la commande -->
+                <p:dialog header="Détails Commande ##{commande.id}" widgetVar="dlg-#{commande.id}" modal="true" width="700">
+                    <p:dataTable value="#{commande.lignesCommande}" var="ligne">
+                        <p:column headerText="Produit">
+                            <h:outputText value="#{ligne.produit.nom}"/>
+                        </p:column>
+                        <p:column headerText="Qté" style="text-align: center;">
+                            <h:outputText value="#{ligne.quantite}"/>
+                        </p:column>
+                        <p:column headerText="Prix U." style="text-align: right;">
+                            <h:outputText value="#{ligne.prixUnitaire}">
+                                <f:convertNumber currencySymbol="DH" type="currency"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Sous-Total" style="text-align: right;">
+                            <h:outputText value="#{ligne.sousTotal}" style="font-weight: bold;">
+                                <f:convertNumber currencySymbol="DH" type="currency"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+
+            </p:dataTable>
+        </h:form>
+    </div>
+</h:body>
+</html>

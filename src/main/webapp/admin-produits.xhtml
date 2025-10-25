@@ -13,8 +13,36 @@
     <h:form>
         <p:menubar>
             <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+            <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-box"
+                        rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
             <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"
                         rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
+            <p:menuitem value="Commandes Admin" outcome="admin-commandes" icon="pi pi-server"
+                        rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
+            <f:facet name="options">
+                <h:panelGroup layout="block" style="display: flex; align-items: center; gap: 10px;">
+                    <!-- Panier -->
+                    <p:commandButton value="Panier (#{panierBean.nombreArticles})"
+                                     icon="pi pi-shopping-cart"
+                                     action="panier"
+                                     styleClass="ui-button-success"
+                                     rendered="#{authBean.estConnecte()}"/>
+                    <h:outputText value="Bonjour #{authBean.internauteConnecte.prenom} !"
+                                  style="margin-right: 10px; margin-left: 10px;"
+                                  rendered="#{authBean.estConnecte()}"/>
+                    <p:commandButton value="Déconnexion"
+                                     icon="pi pi-sign-out"
+                                     action="#{authBean.seDeconnecter()}"
+                                     styleClass="ui-button-danger"
+                                     rendered="#{authBean.estConnecte()}"/>
+
+                    <h:panelGroup rendered="#{!authBean.estConnecte()}">
+                        <p:button value="Connexion" outcome="login" icon="pi pi-sign-in"/>
+                        <p:button value="Inscription" outcome="register" icon="pi pi-user-plus"
+                                  styleClass="ui-button-success"/>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </f:facet>
         </p:menubar>
     </h:form>
 

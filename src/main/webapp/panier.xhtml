@@ -10,10 +10,35 @@
 
 <h:body>
     <!-- Menu -->
-    <p:menubar>
-        <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
-        <p:menuitem value="Mes Commandes" outcome="commandes" icon="pi pi-shopping-bag"/>
-    </p:menubar>
+    <h:form>
+        <p:menubar>
+            <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+            <p:menuitem value="Mes Commandes" outcome="commandes" icon="pi pi-shopping-bag"/>
+            <f:facet name="options">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <p:commandButton value="Panier (#{panierBean.nombreArticles})"
+                                     icon="pi pi-shopping-cart"
+                                     action="panier"
+                                     styleClass="ui-button-success"
+                                     rendered="#{authBean.estConnecte()}"/>
+                    <span style="margin-right: 10px; margin-left: 10px;" rendered="#{authBean.estConnecte()}">
+                            Bonjour #{authBean.internauteConnecte.prenom} !
+                        </span>
+                    <p:commandButton value="Déconnexion"
+                                     icon="pi pi-sign-out"
+                                     action="#{authBean.seDeconnecter()}"
+                                     styleClass="ui-button-danger"
+                                     rendered="#{authBean.estConnecte()}"/>
+
+                    <h:panelGroup rendered="#{!authBean.estConnecte()}">
+                        <p:button value="Connexion" outcome="login" icon="pi pi-sign-in"/>
+                        <p:button value="Inscription" outcome="register" icon="pi pi-user-plus"
+                                  styleClass="ui-button-success"/>
+                    </h:panelGroup>
+                </div>
+            </f:facet>
+        </p:menubar>
+    </h:form>
 
     <div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
         <h2>🛒 Mon Panier</h2>
