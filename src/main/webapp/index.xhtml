@@ -54,8 +54,10 @@
     <!-- Menu de navigation -->
     <p:menubar>
         <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
-        <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"/>
-        <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-cog"/>
+        <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"
+                    rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
+        <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-cog"
+                    rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
         <p:menuitem value="Mes Commandes" outcome="commandes" icon="pi pi-shopping-bag"
                     rendered="#{authBean.estConnecte()}"/>
 

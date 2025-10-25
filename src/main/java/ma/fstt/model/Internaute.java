@@ -47,6 +47,9 @@ public class Internaute {
     @Column(length = 20)
     private String codePostal;
 
+    @Column(nullable = false, length = 20)
+    private String role = "USER";
+
     // Relation OneToMany : Un internaute peut avoir plusieurs paniers (historique)
     @OneToMany(mappedBy = "internaute", cascade = CascadeType.ALL)
     private List<Panier> paniers = new ArrayList<>();

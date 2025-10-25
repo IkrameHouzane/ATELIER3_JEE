@@ -13,7 +13,8 @@
     <h:form>
         <p:menubar>
             <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
-            <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-box"/>
+            <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-box"
+                        rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
         </p:menubar>
     </h:form>
 

@@ -1,9 +1,12 @@
 package ma.fstt.beans;
 
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,6 +71,14 @@ public class AuthBean implements Serializable {
             internauteConnecte = internautes.get(0);
             messageErreur = null;
 
+            // Manually put the bean in the session to make it available to the filter
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.setAttribute("authBean", this);
+            }
+
             // Redirection vers la page d'accueil
             return "index?faces-redirect=true";
 
@@ -104,6 +115,14 @@ public class AuthBean implements Serializable {
             nouvelInternaute = new Internaute(); // Réinitialiser le formulaire
             messageErreur = null;
 
+            // Manually put the bean in the session to make it available to the filter
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.setAttribute("authBean", this);
+            }
+
             return "index?faces-redirect=true";
 
         } catch (Exception e) {
@@ -120,6 +139,15 @@ public class AuthBean implements Serializable {
         internauteConnecte = null;
         email = null;
         motDePasse = null;
+
+        // Manually remove the bean from the session
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("authBean");
+        }
+
         return "index?faces-redirect=true";
     }
 }
