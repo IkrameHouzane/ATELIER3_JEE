@@ -1,23 +1,20 @@
 package ma.fstt.beans;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.ejb.Stateless;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 import ma.fstt.model.Categorie;
 
 import java.util.List;
 
-/**
- * Bean pour gérer les catégories de produits
- * RequestScoped = Créé à chaque requête HTTP
- */
 @Named
-@RequestScoped
+@Stateless
 @Getter
 @Setter
 public class CategorieBean {
@@ -25,78 +22,68 @@ public class CategorieBean {
     @PersistenceContext(unitName = "mycnx")
     private EntityManager em;
 
-    // Pour créer une nouvelle catégorie
     private Categorie nouvelleCategorie = new Categorie();
-
-    // Liste de toutes les catégories
     private List<Categorie> categories;
 
-    /**
-     * Méthode appelée automatiquement après la création du bean
-     */
     @PostConstruct
     public void init() {
         chargerCategories();
     }
 
-    /**
-     * Charge toutes les catégories depuis la base de données
-     */
     public void chargerCategories() {
-        categories = em.createQuery("SELECT c FROM Categorie c ORDER BY c.nom", Categorie.class)
-                .getResultList();
-    }
-
-    /**
-     * Sauvegarde (ajoute ou modifie) une catégorie
-     */
-    @Transactional
-    public String sauvegarderCategorie() {
         try {
-            if (nouvelleCategorie.getId() == null) {
-                // Nouvelle catégorie
-                em.persist(nouvelleCategorie);
-            } else {
-                // Modification d'une catégorie existante
-                em.merge(nouvelleCategorie);
-            }
-            
-            annulerModification(); // Réinitialise le formulaire
-            chargerCategories();
-            return "categories?faces-redirect=true";
+            categories = em.createQuery("SELECT c FROM Categorie c ORDER BY c.nom", Categorie.class)
+                    .getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            addErrorMessage("Erreur lors du chargement : " + e.getMessage());
         }
     }
 
-    /**
-     * Charge une catégorie pour modification
-     */
+    public void ajouterCategorie() {
+        try {
+            if (nouvelleCategorie.getId() == null) {
+                em.persist(nouvelleCategorie);
+                addInfoMessage("Catégorie ajoutée avec succès");
+            } else {
+                em.merge(nouvelleCategorie);
+                addInfoMessage("Catégorie modifiée avec succès");
+            }
+            nouvelleCategorie = new Categorie();
+            chargerCategories();
+        } catch (Exception e) {
+            addErrorMessage("Erreur : " + e.getMessage());
+        }
+    }
+
     public void modifierCategorie(Categorie categorie) {
         this.nouvelleCategorie = em.find(Categorie.class, categorie.getId());
     }
 
-    /**
-     * Réinitialise le formulaire après ajout/modification ou annulation
-     */
     public void annulerModification() {
         this.nouvelleCategorie = new Categorie();
     }
 
-    /**
-     * Supprime une catégorie
-     */
-    @Transactional
     public void supprimerCategorie(Long id) {
         try {
             Categorie categorie = em.find(Categorie.class, id);
             if (categorie != null) {
                 em.remove(categorie);
+                addInfoMessage("Catégorie supprimée");
                 chargerCategories();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            addErrorMessage("Impossible de supprimer : " + e.getMessage());
         }
+    }
+
+    private void addInfoMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", message));
+    }
+
+    private void addErrorMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", message));
     }
 }

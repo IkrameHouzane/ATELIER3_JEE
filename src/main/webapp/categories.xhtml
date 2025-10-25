@@ -10,23 +10,31 @@
 
 <h:body>
     <!-- Menu -->
-    <p:menubar>
-        <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
-        <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-box"/>
-    </p:menubar>
+    <h:form>
+        <p:menubar>
+            <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+            <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-box"/>
+        </p:menubar>
+    </h:form>
 
     <div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
         <h2>🏷️ Gestion des Catégories</h2>
 
-        <h:form>
-            <!-- Formulaire d'ajout -->
-            <p:panel header="Ajouter une catégorie" style="margin-bottom: 20px;">
+        <h:form id="categorieForm">
+            <!-- Messages de feedback -->
+            <p:messages id="messages" autoUpdate="true" showDetail="true" closable="true"/>
+
+            <!-- Formulaire d'ajout/modification -->
+            <p:panel id="formPanel"
+                     header="#{categorieBean.nouvelleCategorie.id == null ? 'Ajouter une catégorie' : 'Modifier la catégorie'}"
+                     style="margin-bottom: 20px;">
                 <div class="p-grid">
                     <div class="p-col-12 p-md-5">
                         <label for="nom">Nom de la catégorie *</label>
                         <p:inputText id="nom"
                                      value="#{categorieBean.nouvelleCategorie.nom}"
                                      required="true"
+                                     requiredMessage="Le nom est obligatoire"
                                      placeholder="Ex: Électronique"
                                      style="width: 100%; margin-top: 5px;"/>
                     </div>
@@ -35,27 +43,38 @@
                         <label for="description">Description</label>
                         <p:inputText id="description"
                                      value="#{categorieBean.nouvelleCategorie.description}"
-                                     placeholder="Ex: Produits électroniques et informatiques"
+                                     placeholder="Ex: Produits électroniques"
                                      style="width: 100%; margin-top: 5px;"/>
                     </div>
 
-                    <div class="p-col-12 p-md-2" style="display: flex; align-items: flex-end;">
-                        <p:commandButton value="Ajouter"
-                                         icon="pi pi-plus"
-                                         action="#{categorieBean.ajouterCategorie()}"
-                                         update="@form"
+                    <div class="p-col-12 p-md-2" style="display: flex; align-items: flex-end; gap: 5px;">
+                        <p:commandButton value="#{categorieBean.nouvelleCategorie.id == null ? 'Ajouter' : 'Modifier'}"
+                                         icon="pi pi-#{categorieBean.nouvelleCategorie.id == null ? 'plus' : 'pencil'}"
+                                         actionListener="#{categorieBean.ajouterCategorie()}"
+                                         update="categorieForm"
                                          styleClass="ui-button-success"
-                                         style="width: 100%;"/>
+                                         style="flex: 1;"/>
+
+                        <p:commandButton value="Annuler"
+                                         icon="pi pi-times"
+                                         actionListener="#{categorieBean.annulerModification()}"
+                                         update="categorieForm"
+                                         process="@this"
+                                         styleClass="ui-button-secondary"
+                                         style="flex: 1;"
+                                         rendered="#{categorieBean.nouvelleCategorie.id != null}"/>
                     </div>
                 </div>
             </p:panel>
 
             <!-- Liste des catégories -->
-            <p:dataTable value="#{categorieBean.categories}"
+            <p:dataTable id="categorieTable"
+                         value="#{categorieBean.categories}"
                          var="categorie"
                          emptyMessage="Aucune catégorie"
                          paginator="true"
-                         rows="10">
+                         rows="10"
+                         paginatorPosition="bottom">
 
                 <p:column headerText="ID" style="width: 10%; text-align: center;">
                     <strong>##{categorie.id}</strong>
@@ -65,32 +84,44 @@
                     <h:outputText value="#{categorie.nom}" style="font-weight: bold;"/>
                 </p:column>
 
-                <p:column headerText="Description" style="width: 45%;">
-                    #{categorie.description}
+                <p:column headerText="Description" style="width: 35%;">
+                    <h:outputText value="#{categorie.description}"/>
                 </p:column>
 
-                <p:column headerText="Actions" style="width: 15%; text-align: center;">
+                <p:column headerText="Actions" style="width: 25%; text-align: center;">
+                    <!-- Bouton Modifier -->
                     <p:commandButton icon="pi pi-pencil"
-                                     action="#{categorieBean.modifierCategorie(categorie)}"
-                                     update="@form"
-                                     styleClass="ui-button-info"
+                                     actionListener="#{categorieBean.modifierCategorie(categorie)}"
+                                     process="@this"
+                                     update=":categorieForm:formPanel"
+                                     styleClass="ui-button-warning"
                                      title="Modifier"
-                                     style="margin-right: 5px;"/>
+                                     style="margin-right: 10px;"/>
+
+                    <!-- Bouton Supprimer avec confirmation -->
                     <p:commandButton icon="pi pi-trash"
-                                     action="#{categorieBean.supprimerCategorie(categorie.id)}"
-                                     update="@form"
+                                     actionListener="#{categorieBean.supprimerCategorie(categorie.id)}"
+                                     process="@this"
+                                     update=":categorieForm:categorieTable :categorieForm:messages"
                                      styleClass="ui-button-danger"
                                      title="Supprimer">
                         <p:confirm header="Confirmation"
-                                   message="Supprimer la catégorie '#{categorie.nom}' et tous ses produits ?"
+                                   message="Voulez-vous vraiment supprimer '#{categorie.nom}' ?"
                                    icon="pi pi-exclamation-triangle"/>
                     </p:commandButton>
                 </p:column>
             </p:dataTable>
 
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
-                <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times"/>
+            <!-- Dialog de confirmation -->
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true">
+                <p:commandButton value="Oui"
+                                 type="button"
+                                 styleClass="ui-confirmdialog-yes ui-button-danger"
+                                 icon="pi pi-check"/>
+                <p:commandButton value="Non"
+                                 type="button"
+                                 styleClass="ui-confirmdialog-no ui-button-secondary"
+                                 icon="pi pi-times"/>
             </p:confirmDialog>
         </h:form>
     </div>

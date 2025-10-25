@@ -67,20 +67,14 @@
                                      icon="pi pi-shopping-cart"
                                      action="panier"
                                      styleClass="ui-button-success"/>
-                </h:form>
-
-                <!-- Connexion/Déconnexion -->
-                <h:panelGroup rendered="#{authBean.estConnecte()}">
-                    <span style="margin-right: 10px;">
+                    <span style="margin-right: 10px; margin-left: 10px;">
                         Bonjour #{authBean.internauteConnecte.prenom} !
                     </span>
-                    <h:form style="display: inline;">
-                        <p:commandButton value="Déconnexion"
-                                         icon="pi pi-sign-out"
-                                         action="#{authBean.seDeconnecter()}"
-                                         styleClass="ui-button-danger"/>
-                    </h:form>
-                </h:panelGroup>
+                    <p:commandButton value="Déconnexion"
+                                     icon="pi pi-sign-out"
+                                     action="#{authBean.seDeconnecter()}"
+                                     styleClass="ui-button-danger"/>
+                </h:form>
 
                 <h:panelGroup rendered="#{!authBean.estConnecte()}">
                     <p:button value="Connexion" outcome="login" icon="pi pi-sign-in"/>

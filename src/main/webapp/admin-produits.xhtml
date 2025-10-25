@@ -9,20 +9,25 @@
 </h:head>
 
 <h:body>
-    <!-- Menu -->
-    <p:menubar>
-        <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
-        <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"/>
-    </p:menubar>
+    <!-- Menu dans un formulaire séparé -->
+    <h:form>
+        <p:menubar>
+            <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
+            <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"/>
+            <p:menuitem value="Commandes" outcome="commandes" icon="pi pi-shopping-cart"/>
+        </p:menubar>
+    </h:form>
 
     <div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
         <h2>📦 Gestion des Produits</h2>
 
-        <h:form>
-            <!-- Formulaire d'ajout -->
-            <p:panel header="#{produitBean.nouveauProduit.id == null ? 'Ajouter un produit' : 'Modifier le produit #' += produitBean.nouveauProduit.id}" style="margin-bottom: 20px;">
+        <!-- Afficher les messages -->
+        <p:messages autoUpdate="true" showDetail="true" />
+
+        <h:form id="produitForm">
+            <!-- Formulaire d'ajout/modification -->
+            <p:panel header="#{produitBean.nouveauProduit.id == null ? 'Ajouter un produit' : 'Modifier un produit'}" style="margin-bottom: 20px;">
                 <div class="p-grid">
-                    <p:inputText id="produitId" value="#{produitBean.nouveauProduit.id}" type="hidden"/>
                     <div class="p-col-12 p-md-4">
                         <label for="nom">Nom du produit *</label>
                         <p:inputText id="nom"
@@ -82,20 +87,20 @@
                                      style="width: 100%; margin-top: 5px;"/>
                     </div>
 
-                    <div class="p-col-12 p-md-2" style="display: flex; align-items: flex-end; gap: 10px;">
-                        <p:commandButton value="#{produitBean.nouveauProduit.id == null ? 'Ajouter' : 'Sauvegarder'}"
-                                         icon="#{produitBean.nouveauProduit.id == null ? 'pi pi-plus' : 'pi pi-save'}"
-                                         action="#{produitBean.sauvegarderProduit()}"
-                                         update="@form"
+                    <div class="p-col-12 p-md-1" style="display: flex; align-items: flex-end;">
+                        <p:commandButton value="#{produitBean.nouveauProduit.id == null ? 'Ajouter' : 'Modifier'}"
+                                         icon="pi pi-#{(produitBean.nouveauProduit.id == null ? 'plus' : 'pencil')}"
+                                         action="#{produitBean.ajouterProduit}"
+                                         update=":produitForm"
                                          styleClass="ui-button-success"
-                                         style="flex-grow: 1;"/>
+                                         style="width: 100%; margin-right: 10px;"/>
                         <p:commandButton value="Annuler"
                                          icon="pi pi-times"
-                                         action="#{produitBean.annulerModification()}"
-                                         update="@form"
+                                         action="#{produitBean.annulerModification}"
+                                         update=":produitForm"
                                          styleClass="ui-button-secondary"
-                                         rendered="#{produitBean.nouveauProduit.id != null}"
-                                         style="flex-grow: 1;"/>
+                                         style="width: 100%;"
+                                         rendered="#{produitBean.nouveauProduit.id != null}"/>
                     </div>
                 </div>
             </p:panel>
@@ -108,7 +113,7 @@
                          rows="10">
 
                 <p:column headerText="ID" style="width: 5%; text-align: center;">
-                    <strong>##{produit.id}</strong>
+                    <strong>#{produit.id}</strong>
                 </p:column>
 
                 <p:column headerText="Image" style="width: 10%; text-align: center;">
@@ -127,7 +132,7 @@
                 </p:column>
 
                 <p:column headerText="Catégorie" style="width: 12%;">
-                    #{produit.categorie.nom}
+                    <h:outputText value="#{produit.categorie.nom}"/>
                 </p:column>
 
                 <p:column headerText="Prix" style="width: 10%; text-align: center;">
@@ -143,13 +148,15 @@
                 <p:column headerText="Actions" style="width: 10%; text-align: center;">
                     <p:commandButton icon="pi pi-pencil"
                                      action="#{produitBean.modifierProduit(produit)}"
-                                     update="@form"
-                                     styleClass="ui-button-info"
+                                     process="@this"
+                                     update=":produitForm"
+                                     styleClass="ui-button-warning"
                                      title="Modifier"
-                                     style="margin-right: 5px;"/>
+                                     style="margin-right: 10px;"/>
                     <p:commandButton icon="pi pi-trash"
                                      action="#{produitBean.supprimerProduit(produit.id)}"
-                                     update="@form"
+                                     process="@this"
+                                     update=":produitForm"
                                      styleClass="ui-button-danger"
                                      title="Supprimer">
                         <p:confirm header="Confirmation"
