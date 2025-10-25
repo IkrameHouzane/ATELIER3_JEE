@@ -55,11 +55,11 @@
     <h:form>
         <p:menubar>
             <p:menuitem value="Accueil" outcome="index" icon="pi pi-home"/>
-            <p:menuitem value="Catégories" outcome="categories" icon="pi pi-list"
+            <p:menuitem value="Gestion des catégories" outcome="categories" icon="pi pi-list"
                         rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
-            <p:menuitem value="Produits Admin" outcome="admin-produits" icon="pi pi-cog"
+            <p:menuitem value="Gestion des produits" outcome="admin-produits" icon="pi pi-cog"
                         rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
-            <p:menuitem value="Commandes Admin" outcome="admin-commandes" icon="pi pi-server"
+            <p:menuitem value="Commandes des clients" outcome="admin-commandes" icon="pi pi-server"
                         rendered="#{authBean.estConnecte() and authBean.internauteConnecte.role == 'ADMIN'}"/>
             <p:menuitem value="Mes Commandes" outcome="commandes" icon="pi pi-shopping-bag"
                         rendered="#{authBean.estConnecte()}"/>
@@ -72,14 +72,14 @@
                                          action="panier"
                                          styleClass="ui-button-success"
                                          rendered="#{authBean.estConnecte()}"/>
-                        <span style="margin-right: 10px; margin-left: 10px;" rendered="#{authBean.estConnecte()}">
-                            Bonjour #{authBean.internauteConnecte.prenom} !
-                        </span>
+                        <h:panelGroup rendered="#{authBean.estConnecte()}">
+                        <h:outputText value="Bonjour #{authBean.internauteConnecte.prenom} !"
+                                      style="margin-right: 10px; margin-left: 10px;"/>
                         <p:commandButton value="Déconnexion"
                                          icon="pi pi-sign-out"
                                          action="#{authBean.seDeconnecter()}"
-                                         styleClass="ui-button-danger"
-                                         rendered="#{authBean.estConnecte()}"/>
+                                         styleClass="ui-button-danger"/>
+                    </h:panelGroup>
 
                     <h:panelGroup rendered="#{!authBean.estConnecte()}">
                         <p:button value="Connexion" outcome="login" icon="pi pi-sign-in"/>

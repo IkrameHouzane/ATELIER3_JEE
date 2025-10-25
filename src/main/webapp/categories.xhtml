@@ -27,14 +27,14 @@
                                          action="panier"
                                          styleClass="ui-button-success"
                                          rendered="#{authBean.estConnecte()}"/>
-                        <span style="margin-right: 10px; margin-left: 10px;" rendered="#{authBean.estConnecte()}">
-                            Bonjour #{authBean.internauteConnecte.prenom} !
-                        </span>
+                        <h:panelGroup rendered="#{authBean.estConnecte()}">
+                        <h:outputText value="Bonjour #{authBean.internauteConnecte.prenom} !"
+                                      style="margin-right: 10px; margin-left: 10px;"/>
                         <p:commandButton value="Déconnexion"
                                          icon="pi pi-sign-out"
                                          action="#{authBean.seDeconnecter()}"
-                                         styleClass="ui-button-danger"
-                                         rendered="#{authBean.estConnecte()}"/>
+                                         styleClass="ui-button-danger"/>
+                    </h:panelGroup>
 
                     <h:panelGroup rendered="#{!authBean.estConnecte()}">
                         <p:button value="Connexion" outcome="login" icon="pi pi-sign-in"/>
